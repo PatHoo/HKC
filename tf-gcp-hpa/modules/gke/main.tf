@@ -84,22 +84,10 @@ resource "google_container_node_pool" "primary_nodes" {
     ])
 
     # 设置标签
-    dynamic "labels" {
-      for_each = lookup(var.node_pools_labels, each.value.name, {})
-      content {
-        key   = labels.key
-        value = labels.value
-      }
-    }
+    labels = lookup(var.node_pools_labels, each.value.name, {})
 
     # 设置元数据
-    dynamic "metadata" {
-      for_each = lookup(var.node_pools_metadata, each.value.name, {})
-      content {
-        key   = metadata.key
-        value = metadata.value
-      }
-    }
+    metadata = lookup(var.node_pools_metadata, each.value.name, {})
 
     # 设置污点
     dynamic "taint" {
