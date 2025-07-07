@@ -1,0 +1,170 @@
+/**
+ * Jenkins 蓝绿部署流水线
+ * 创建日期: 2025-07-07
+ */
+
+pipeline {
+    agent any
+    
+    // 定义环境变量
+    environment {
+        APP_NAME = 'demo-app'
+        DEPLOY_DIR = '/var/www'
+        CONFIG_DIR = "${WORKSPACE}/config"
+        SCRIPTS_DIR = "${WORKSPACE}/scripts"
+        CURRENT_ENV_FILE = '/var/jenkins_home/blue_green_current_env'
+    }
+    
+    // 定义流水线参数
+    parameters {
+        choice(
+            name: 'ACTION',
+            choices: ['deploy', 'rollback'],
+            description: '选择操作: 部署新版本或回滚到上一个版本'
+        )
+        string(
+            name: 'VERSION',
+            defaultValue: '',
+            description: '应用版本号 (例如: 1.0.0)'
+        )
+    }
+    
+    stages {
+        // 准备阶段：确定当前活动环境
+        stage('Prepare') {
+            steps {
+                script {
+                    echo "开始蓝绿部署流程..."
+                    
+                    // 确定当前活动环境（蓝或绿）
+                    sh "chmod +x ${SCRIPTS_DIR}/*.sh"
+                    env.CURRENT_ENV = sh(script: "${SCRIPTS_DIR}/get_current_env.sh", returnStdout: true).trim()
+                    env.TARGET_ENV = env.CURRENT_ENV == 'blue' ? 'green' : 'blue'
+                    
+                    echo "当前活动环境: ${env.CURRENT_ENV}"
+                    echo "目标部署环境: ${env.TARGET_ENV}"
+                }
+            }
+        }
+        
+        // 构建阶段
+        stage('Build') {
+            when {
+                expression { params.ACTION == 'deploy' }
+            }
+            steps {
+                echo "构建应用版本: ${params.VERSION}..."
+                
+                // 这里是构建应用的步骤，根据实际项目修改
+                sh "echo '模拟构建过程...'"
+                // 例如: sh "mvn clean package -DskipTests"
+            }
+        }
+        
+        // 部署阶段：部署到非活动环境
+        stage('Deploy') {
+            when {
+                expression { params.ACTION == 'deploy' }
+            }
+            steps {
+                echo "部署到 ${env.TARGET_ENV} 环境..."
+                
+                // 使用部署脚本
+                sh """
+                    ${SCRIPTS_DIR}/deploy.sh \
+                    ${env.TARGET_ENV} \
+                    ${params.VERSION} \
+                    ${CONFIG_DIR}/${env.TARGET_ENV}.properties
+                """
+                
+                echo "部署完成，${env.TARGET_ENV} 环境现在运行版本 ${params.VERSION}"
+            }
+        }
+        
+        // 测试阶段：测试新部署的环境
+        stage('Test') {
+            when {
+                expression { params.ACTION == 'deploy' }
+            }
+            steps {
+                echo "测试 ${env.TARGET_ENV} 环境..."
+                
+                // 使用测试脚本
+                sh """
+                    ${SCRIPTS_DIR}/test.sh \
+                    ${env.TARGET_ENV} \
+                    ${CONFIG_DIR}/${env.TARGET_ENV}.properties
+                """
+                
+                echo "${env.TARGET_ENV} 环境测试通过"
+            }
+        }
+        
+        // 确认阶段：手动确认是否切换流量
+        stage('Confirm Switch') {
+            when {
+                expression { params.ACTION == 'deploy' }
+            }
+            steps {
+                input message: "是否将流量切换到 ${env.TARGET_ENV} 环境？", ok: '确认切换'
+            }
+        }
+        
+        // 切换阶段：将流量切换到新环境
+        stage('Switch') {
+            when {
+                expression { params.ACTION == 'deploy' }
+            }
+            steps {
+                echo "切换流量到 ${env.TARGET_ENV} 环境..."
+                
+                // 使用切换脚本
+                sh """
+                    ${SCRIPTS_DIR}/switch.sh \
+                    ${env.CURRENT_ENV} \
+                    ${env.TARGET_ENV}
+                """
+                
+                // 更新当前环境记录
+                sh "echo ${env.TARGET_ENV} > ${CURRENT_ENV_FILE}"
+                
+                echo "流量已成功切换到 ${env.TARGET_ENV} 环境"
+            }
+        }
+        
+        // 回滚阶段
+        stage('Rollback') {
+            when {
+                expression { params.ACTION == 'rollback' }
+            }
+            steps {
+                echo "执行回滚操作..."
+                
+                // 使用回滚脚本
+                sh """
+                    ${SCRIPTS_DIR}/rollback.sh \
+                    ${env.CURRENT_ENV} \
+                    ${env.TARGET_ENV}
+                """
+                
+                // 更新当前环境记录
+                sh "echo ${env.TARGET_ENV} > ${CURRENT_ENV_FILE}"
+                
+                echo "已成功回滚到 ${env.TARGET_ENV} 环境"
+            }
+        }
+    }
+    
+    // 完成后操作
+    post {
+        success {
+            echo "蓝绿部署流程成功完成！"
+        }
+        failure {
+            echo "蓝绿部署流程失败！"
+        }
+        always {
+            echo "清理临时文件..."
+        }
+    }
+}

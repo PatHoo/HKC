@@ -1,0 +1,34 @@
+# Nginx 蓝绿部署配置模板
+# 创建日期: 2025-07-07
+
+upstream blue {
+    server 127.0.0.1:8081;
+}
+
+upstream green {
+    server 127.0.0.1:8082;
+}
+
+server {
+    listen 80;
+    server_name example.com;
+
+    access_log /var/log/nginx/app.access.log;
+    error_log /var/log/nginx/app.error.log;
+
+    # 根据当前活动环境（由 switch.sh 脚本替换）转发请求
+    location / {
+        proxy_pass http://{{ACTIVE_ENV}};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # 健康检查端点
+    location /health {
+        proxy_pass http://{{ACTIVE_ENV}}/health;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}

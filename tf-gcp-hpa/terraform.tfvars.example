@@ -1,0 +1,28 @@
+/**
+ * GCP Terraform HPA 实现 - 变量值示例
+ * 创建日期: 2025-07-07
+ */
+
+# GCP 项目配置
+project_id = "your-gcp-project-id"
+region     = "asia-east1"
+zone       = "asia-east1-a"
+
+# GKE 集群配置
+cluster_name = "gke-hpa-demo"
+network      = "default"
+subnetwork   = "default"
+
+# IP 地址范围
+ip_range_pods     = "ip-range-pods"
+ip_range_services = "ip-range-services"
+
+# 应用配置
+app_name     = "demo-app"
+app_image    = "nginx:latest"
+app_replicas = 2
+
+# HPA 配置
+cpu_threshold = 50
+min_replicas  = 1
+max_replicas  = 10
