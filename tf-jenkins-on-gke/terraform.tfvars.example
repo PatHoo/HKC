@@ -1,0 +1,26 @@
+/**
+ * tf-jenkins-on-gke - 变量值示例
+ * 创建日期: 2025-07-08
+ */
+
+# GCP 项目配置
+project_id = "your-gcp-project-id"
+region     = "asia-east1"
+zone       = "asia-east1-a"
+
+# 网络配置
+network_name         = "jenkins-network"      # VPC 网络名称
+subnet_name          = "jenkins-subnet"       # 子网名称
+subnet_ip_cidr_range = "10.0.0.0/20"          # 子网 IP CIDR 范围
+ip_range_pods_name   = "ip-range-pods"        # Pod IP 范围名称
+ip_range_pods_cidr   = "10.16.0.0/16"         # Pod IP CIDR 范围
+ip_range_services_name = "ip-range-services"  # 服务 IP 范围名称
+ip_range_services_cidr = "10.20.0.0/16"       # 服务 IP CIDR 范围
+
+# GKE 集群配置
+cluster_name = "jenkins-cluster"
+node_count   = 3
+machine_type = "e2-standard-2"
+
+# Jenkins 配置
+jenkins_namespace = "jenkins"
