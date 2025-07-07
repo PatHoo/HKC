@@ -1,0 +1,46 @@
+# GCP 项目配置
+project_id = "your-gcp-project-id"
+region     = "asia-east1"
+
+# 网络配置
+network_name          = "custom-hsbc-vpc"
+subnet_name           = "custom-hsbc-subnet"
+subnet_ip_cidr_range  = "10.0.0.0/20"  # 自定义子网 CIDR
+
+# GKE Pod 和 Service IP 范围配置
+ip_range_pods_name     = "ip-range-pods"
+ip_range_pods_cidr     = "10.10.0.0/16"  # 自定义 Pod IP 范围
+ip_range_services_name = "ip-range-services"
+ip_range_services_cidr = "10.20.0.0/16"  # 自定义 Service IP 范围
+
+# GKE 集群配置
+cluster_name                = "custom-hsbc-gke"
+kubernetes_version          = "1.24"
+node_pool_name              = "custom-node-pool"
+node_count                  = 3
+machine_type                = "e2-standard-2"
+disk_size_gb                = 100
+disk_type                   = "pd-standard"
+auto_repair                 = true
+auto_upgrade                = true
+enable_private_nodes        = true
+enable_private_endpoint     = false
+master_ipv4_cidr_block      = "172.16.0.0/28"
+enable_network_policy       = true
+enable_horizontal_pod_autoscaling = true
+enable_vertical_pod_autoscaling   = true
+
+# Jenkins 配置
+jenkins_namespace           = "jenkins"
+blue_deployment_active      = true
+jenkins_image               = "jenkins/jenkins:lts"
+jenkins_replicas            = 1
+jenkins_storage_size        = "10Gi"
+
+# HPA 演示配置
+hpa_demo_namespace          = "hpa-demo"
+hpa_demo_replicas           = 2
+hpa_demo_min_replicas       = 1
+hpa_demo_max_replicas       = 10
+hpa_demo_cpu_target         = 50
+hpa_demo_memory_target      = 80

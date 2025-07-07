@@ -181,6 +181,63 @@ ab -n 1000 -c 100 http://HPA_DEMO_URL/
 kubectl get hpa -n dev-hpa-demo -w
 ```
 
+### 自定义网络
+
+本项目支持通过多种方式自定义网络配置：
+
+#### 1. 使用 terraform.tfvars 文件
+
+在环境目录（如 `environments/dev` 或 `environments/prod`）中创建 `terraform.tfvars` 文件，添加以下变量：
+
+```hcl
+# 网络配置
+network_name          = "custom-hsbc-vpc"
+subnet_name           = "custom-hsbc-subnet"
+subnet_ip_cidr_range  = "10.0.0.0/20"  # 自定义子网 CIDR
+ip_range_pods_cidr     = "10.10.0.0/16"  # 自定义 Pod IP 范围
+ip_range_services_cidr = "10.20.0.0/16"  # 自定义 Service IP 范围
+```
+
+项目根目录下提供了 `terraform.tfvars.example` 示例文件，您可以复制到相应环境目录并按需修改：
+
+```bash
+# 复制到开发环境
+copy terraform.tfvars.example environments\dev\terraform.tfvars
+
+# 复制到生产环境
+copy terraform.tfvars.example environments\prod\terraform.tfvars
+```
+
+#### 2. 通过命令行参数
+
+在执行 `terraform apply` 时通过 `-var` 参数传递：
+
+```bash
+terraform apply \
+  -var="project_id=YOUR_GCP_PROJECT_ID" \
+  -var="network_name=custom-hsbc-vpc" \
+  -var="subnet_ip_cidr_range=10.0.0.0/20" \
+  -var="ip_range_pods_cidr=10.10.0.0/16" \
+  -var="ip_range_services_cidr=10.20.0.0/16"
+```
+
+#### 3. 可自定义的网络参数
+
+| 参数 | 描述 | 默认值 |
+|------|------|--------|
+| `network_name` | VPC 网络名称 | `hsbc-demo-vpc` |
+| `subnet_name` | 子网名称 | `hsbc-demo-subnet` |
+| `subnet_ip_cidr_range` | 子网 IP CIDR 范围 | `10.0.0.0/24` |
+| `ip_range_pods_name` | GKE Pods IP 范围名称 | `ip-range-pods` |
+| `ip_range_pods_cidr` | GKE Pods IP CIDR 范围 | `10.1.0.0/16` |
+| `ip_range_services_name` | GKE Services IP 范围名称 | `ip-range-services` |
+| `ip_range_services_cidr` | GKE Services IP CIDR 范围 | `10.2.0.0/16` |
+| `region` | GCP 区域 | `asia-east1` |
+
+#### 4. 高级自定义
+
+如需更复杂的网络配置，可以直接修改 `modules/network/main.tf` 文件，例如添加更多防火墙规则、配置 VPC 对等连接、设置 NAT 网关等。
+
 ## 模块说明
 
 ### 网络模块
