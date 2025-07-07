@@ -181,6 +181,63 @@ ab -n 1000 -c 100 http://HPA_DEMO_URL/
 kubectl get hpa -n dev-hpa-demo -w
 ```
 
+### Customizing Network
+
+This project supports customizing network configuration through multiple methods:
+
+#### 1. Using terraform.tfvars File
+
+Create a `terraform.tfvars` file in the environment directory (e.g., `environments/dev` or `environments/prod`) and add the following variables:
+
+```hcl
+# Network configuration
+network_name          = "custom-hsbc-vpc"
+subnet_name           = "custom-hsbc-subnet"
+subnet_ip_cidr_range  = "10.0.0.0/20"  # Custom subnet CIDR
+ip_range_pods_cidr     = "10.10.0.0/16"  # Custom Pod IP range
+ip_range_services_cidr = "10.20.0.0/16"  # Custom Service IP range
+```
+
+The project root directory provides a `terraform.tfvars.example` sample file that you can copy to the appropriate environment directory and modify as needed:
+
+```bash
+# Copy to development environment
+copy terraform.tfvars.example environments\dev\terraform.tfvars
+
+# Copy to production environment
+copy terraform.tfvars.example environments\prod\terraform.tfvars
+```
+
+#### 2. Using Command Line Parameters
+
+Pass variables through the `-var` parameter when executing `terraform apply`:
+
+```bash
+terraform apply \
+  -var="project_id=YOUR_GCP_PROJECT_ID" \
+  -var="network_name=custom-hsbc-vpc" \
+  -var="subnet_ip_cidr_range=10.0.0.0/20" \
+  -var="ip_range_pods_cidr=10.10.0.0/16" \
+  -var="ip_range_services_cidr=10.20.0.0/16"
+```
+
+#### 3. Customizable Network Parameters
+
+| Parameter | Description | Default Value |
+|------|------|--------|
+| `network_name` | VPC network name | `hsbc-demo-vpc` |
+| `subnet_name` | Subnet name | `hsbc-demo-subnet` |
+| `subnet_ip_cidr_range` | Subnet IP CIDR range | `10.0.0.0/24` |
+| `ip_range_pods_name` | GKE Pods IP range name | `ip-range-pods` |
+| `ip_range_pods_cidr` | GKE Pods IP CIDR range | `10.1.0.0/16` |
+| `ip_range_services_name` | GKE Services IP range name | `ip-range-services` |
+| `ip_range_services_cidr` | GKE Services IP CIDR range | `10.2.0.0/16` |
+| `region` | GCP region | `asia-east1` |
+
+#### 4. Advanced Customization
+
+For more complex network configurations, you can directly modify the `modules/network/main.tf` file, such as adding more firewall rules, configuring VPC peering connections, setting up NAT gateways, etc.
+
 ## Module Descriptions
 
 ### Network Module
