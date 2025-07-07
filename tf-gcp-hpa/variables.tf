@@ -26,16 +26,22 @@ variable "cluster_name" {
   default     = "gke-hpa-demo"
 }
 
-variable "network" {
+variable "network_name" {
   description = "VPC 网络名称"
   type        = string
-  default     = "default"
+  default     = "gke-network"
 }
 
-variable "subnetwork" {
+variable "subnetwork_name" {
   description = "VPC 子网名称"
   type        = string
-  default     = "default"
+  default     = "gke-subnet"
+}
+
+variable "subnet_ip_cidr_range" {
+  description = "子网 IP CIDR 范围"
+  type        = string
+  default     = "10.0.0.0/20"
 }
 
 variable "ip_range_pods" {
@@ -44,10 +50,35 @@ variable "ip_range_pods" {
   default     = "ip-range-pods"
 }
 
+variable "ip_range_pods_cidr" {
+  description = "Pod IP CIDR 范围"
+  type        = string
+  default     = "10.1.0.0/16"
+}
+
 variable "ip_range_services" {
   description = "服务 IP 地址范围名称"
   type        = string
   default     = "ip-range-services"
+}
+
+variable "ip_range_services_cidr" {
+  description = "Service IP CIDR 范围"
+  type        = string
+  default     = "10.2.0.0/20"
+}
+
+# 为了兼容性保留旧变量
+variable "network" {
+  description = "[已弃用] 请使用 network_name"
+  type        = string
+  default     = "gke-network"
+}
+
+variable "subnetwork" {
+  description = "[已弃用] 请使用 subnetwork_name"
+  type        = string
+  default     = "gke-subnet"
 }
 
 variable "node_pools" {

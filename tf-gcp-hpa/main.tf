@@ -34,22 +34,37 @@ provider "kubernetes" {
 # 获取 Google 客户端配置
 data "google_client_config" "default" {}
 
+# 创建 VPC 网络和子网
+module "network" {
+  source           = "./modules/network"
+  project_id       = var.project_id
+  region           = var.region
+  network_name     = var.network_name
+  subnetwork_name  = var.subnetwork_name
+  subnet_ip_cidr_range = var.subnet_ip_cidr_range
+  ip_range_pods_name = var.ip_range_pods
+  ip_range_pods_cidr = var.ip_range_pods_cidr
+  ip_range_services_name = var.ip_range_services
+  ip_range_services_cidr = var.ip_range_services_cidr
+}
+
 # 创建 GKE 集群
 module "gke" {
   source                     = "./modules/gke"
   project_id                 = var.project_id
   cluster_name               = var.cluster_name
   region                     = var.region
-  network                    = var.network
-  subnetwork                 = var.subnetwork
-  ip_range_pods              = var.ip_range_pods
-  ip_range_services          = var.ip_range_services
+  network                    = module.network.network_name
+  subnetwork                 = module.network.subnetwork_name
+  ip_range_pods              = module.network.ip_range_pods_name
+  ip_range_services          = module.network.ip_range_services_name
   node_pools                 = var.node_pools
   node_pools_oauth_scopes    = var.node_pools_oauth_scopes
   node_pools_labels          = var.node_pools_labels
   node_pools_metadata        = var.node_pools_metadata
   node_pools_taints          = var.node_pools_taints
   node_pools_tags            = var.node_pools_tags
+  depends_on                 = [module.network]
 }
 
 # 部署示例应用和 HPA
