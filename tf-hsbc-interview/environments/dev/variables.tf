@@ -21,16 +21,40 @@ variable "environment" {
 }
 
 # 网络设置
+variable "network_name" {
+  description = "VPC 网络名称"
+  type        = string
+  default     = "hsbc-demo-vpc"
+}
+
+variable "subnet_name" {
+  description = "子网名称"
+  type        = string
+  default     = "hsbc-demo-subnet"
+}
+
 variable "subnet_ip_cidr_range" {
   description = "子网 IP CIDR 范围"
   type        = string
   default     = "10.0.0.0/24"
 }
 
+variable "ip_range_pods_name" {
+  description = "GKE Pods IP 范围名称"
+  type        = string
+  default     = "ip-range-pods"
+}
+
 variable "ip_range_pods_cidr" {
   description = "GKE Pods IP CIDR 范围"
   type        = string
   default     = "10.1.0.0/16"
+}
+
+variable "ip_range_services_name" {
+  description = "GKE Services IP 范围名称"
+  type        = string
+  default     = "ip-range-services"
 }
 
 variable "ip_range_services_cidr" {
@@ -40,6 +64,24 @@ variable "ip_range_services_cidr" {
 }
 
 # GKE 集群设置
+variable "cluster_name" {
+  description = "GKE 集群名称"
+  type        = string
+  default     = "hsbc-demo-gke"
+}
+
+variable "kubernetes_version" {
+  description = "Kubernetes 版本"
+  type        = string
+  default     = "1.24"
+}
+
+variable "node_pool_name" {
+  description = "节点池名称"
+  type        = string
+  default     = "default-node-pool"
+}
+
 variable "enable_private_nodes" {
   description = "是否启用私有节点"
   type        = bool
@@ -56,6 +98,36 @@ variable "master_ipv4_cidr_block" {
   description = "GKE 主节点 IP CIDR 块"
   type        = string
   default     = "172.16.0.0/28"
+}
+
+variable "auto_repair" {
+  description = "是否启用节点自动修复"
+  type        = bool
+  default     = true
+}
+
+variable "auto_upgrade" {
+  description = "是否启用节点自动升级"
+  type        = bool
+  default     = true
+}
+
+variable "enable_network_policy" {
+  description = "是否启用网络策略"
+  type        = bool
+  default     = true
+}
+
+variable "enable_horizontal_pod_autoscaling" {
+  description = "是否启用水平 Pod 自动扩缩容"
+  type        = bool
+  default     = true
+}
+
+variable "enable_vertical_pod_autoscaling" {
+  description = "是否启用垂直 Pod 自动扩缩容"
+  type        = bool
+  default     = true
 }
 
 variable "node_count" {
@@ -101,10 +173,22 @@ variable "preemptible" {
 }
 
 # Jenkins 设置
+variable "jenkins_namespace" {
+  description = "Jenkins 命名空间"
+  type        = string
+  default     = "jenkins"
+}
+
 variable "jenkins_image" {
   description = "Jenkins 镜像"
   type        = string
   default     = "jenkins/jenkins:lts"
+}
+
+variable "jenkins_replicas" {
+  description = "Jenkins 副本数"
+  type        = number
+  default     = 1
 }
 
 variable "jenkins_storage_size" {
@@ -169,6 +253,12 @@ variable "blue_deployment_active" {
 }
 
 # HPA 演示设置
+variable "hpa_demo_namespace" {
+  description = "HPA 演示命名空间"
+  type        = string
+  default     = "hpa-demo"
+}
+
 variable "hpa_app_image" {
   description = "HPA 演示应用镜像"
   type        = string
@@ -179,6 +269,24 @@ variable "hpa_initial_replicas" {
   description = "HPA 初始副本数"
   type        = number
   default     = 2
+}
+
+variable "hpa_demo_replicas" {
+  description = "HPA 演示副本数"
+  type        = number
+  default     = 2
+}
+
+variable "hpa_demo_cpu_target" {
+  description = "HPA CPU 目标利用率"
+  type        = number
+  default     = 50
+}
+
+variable "hpa_demo_memory_target" {
+  description = "HPA 内存目标利用率"
+  type        = number
+  default     = 80
 }
 
 variable "hpa_min_replicas" {

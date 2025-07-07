@@ -202,10 +202,10 @@ The project root directory provides a `terraform.tfvars.example` sample file tha
 
 ```bash
 # Copy to development environment
-copy terraform.tfvars.example environments\dev\terraform.tfvars
+cp terraform.tfvars.example environments/dev/terraform.tfvars
 
 # Copy to production environment
-copy terraform.tfvars.example environments\prod\terraform.tfvars
+cp terraform.tfvars.example environments/prod/terraform.tfvars
 ```
 
 #### 2. Using Command Line Parameters

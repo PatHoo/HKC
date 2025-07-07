@@ -202,10 +202,10 @@ ip_range_services_cidr = "10.20.0.0/16"  # 自定义 Service IP 范围
 
 ```bash
 # 复制到开发环境
-copy terraform.tfvars.example environments\dev\terraform.tfvars
+cp terraform.tfvars.example environments/dev/terraform.tfvars
 
 # 复制到生产环境
-copy terraform.tfvars.example environments\prod\terraform.tfvars
+cp terraform.tfvars.example environments/prod/terraform.tfvars
 ```
 
 #### 2. 通过命令行参数
