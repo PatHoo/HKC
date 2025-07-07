@@ -1,0 +1,35 @@
+/**
+ * GCP Terraform 蓝绿部署变量值示例
+ * 创建日期: 2025-07-08
+ */
+
+# 项目基础配置
+project_id = "your-gcp-project-id"
+region     = "asia-east1"
+zone       = "asia-east1-a"
+
+# 网络配置
+network    = "default"
+subnetwork = "default"
+
+# 应用配置
+app_name        = "demo-app"
+app_version     = "1.0.0"
+previous_version = "0.9.0"
+
+# 环境配置
+active_env = "blue"  # 初始活动环境，可以是 "blue" 或 "green"
+
+# 实例配置
+machine_type       = "e2-medium"
+proxy_machine_type = "e2-small"
+
+# 端口配置
+blue_port  = 8081
+green_port = 8082
+
+# 健康检查配置
+health_check_path = "/health"
+
+# 部署路径
+deploy_path = "/var/www"

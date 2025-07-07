@@ -1,0 +1,239 @@
+/**
+ * Jenkins Terraform 蓝绿部署流水线
+ * 创建日期: 2025-07-08
+ */
+
+pipeline {
+    agent any
+    
+    // 定义环境变量
+    environment {
+        APP_NAME = 'demo-app'
+        TERRAFORM_DIR = "${WORKSPACE}"
+        SCRIPTS_DIR = "${WORKSPACE}/scripts"
+        TERRAFORM_VERSION = '1.0.0'
+    }
+    
+    // 定义流水线参数
+    parameters {
+        choice(
+            name: 'ACTION',
+            choices: ['deploy', 'rollback'],
+            description: '选择操作: 部署新版本或回滚到上一个版本'
+        )
+        string(
+            name: 'VERSION',
+            defaultValue: '',
+            description: '应用版本号 (例如: 1.0.0)'
+        )
+        choice(
+            name: 'TARGET_ENV',
+            choices: ['auto', 'blue', 'green'],
+            description: '目标环境: auto=自动选择非活动环境, blue=蓝环境, green=绿环境'
+        )
+    }
+    
+    stages {
+        // 准备阶段：安装 Terraform 并确定当前活动环境
+        stage('Prepare') {
+            steps {
+                script {
+                    echo "开始 Terraform 蓝绿部署流程..."
+                    
+                    // 安装 Terraform（如果需要）
+                    sh "terraform --version || (curl -fsSL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o terraform.zip && unzip terraform.zip && chmod +x terraform && mv terraform /usr/local/bin/)"
+                    
+                    // 确定当前活动环境（蓝或绿）
+                    sh "chmod +x ${SCRIPTS_DIR}/*.sh"
+                    
+                    // 如果存在 active_env.txt，则读取当前活动环境
+                    if (fileExists("${TERRAFORM_DIR}/active_env.txt")) {
+                        env.CURRENT_ENV = sh(script: "cat ${TERRAFORM_DIR}/active_env.txt", returnStdout: true).trim()
+                    } else {
+                        env.CURRENT_ENV = "blue"  // 默认为蓝环境
+                        sh "echo blue > ${TERRAFORM_DIR}/active_env.txt"
+                    }
+                    
+                    // 确定目标环境
+                    if (params.TARGET_ENV == 'auto') {
+                        env.TARGET_ENV = env.CURRENT_ENV == 'blue' ? 'green' : 'blue'
+                    } else {
+                        env.TARGET_ENV = params.TARGET_ENV
+                    }
+                    
+                    echo "当前活动环境: ${env.CURRENT_ENV}"
+                    echo "目标部署环境: ${env.TARGET_ENV}"
+                }
+            }
+        }
+        
+        // 初始化 Terraform
+        stage('Terraform Init') {
+            steps {
+                dir(TERRAFORM_DIR) {
+                    sh "terraform init"
+                }
+            }
+        }
+        
+        // 构建阶段
+        stage('Build') {
+            when {
+                expression { params.ACTION == 'deploy' }
+            }
+            steps {
+                echo "构建应用版本: ${params.VERSION}..."
+                
+                // 这里是构建应用的步骤，根据实际项目修改
+                sh "echo '模拟构建过程...'"
+                // 例如: sh "mvn clean package -DskipTests"
+            }
+        }
+        
+        // 部署阶段：部署到目标环境
+        stage('Deploy') {
+            when {
+                expression { params.ACTION == 'deploy' }
+            }
+            steps {
+                echo "部署到 ${env.TARGET_ENV} 环境..."
+                
+                // 创建或更新 terraform.tfvars
+                dir(TERRAFORM_DIR) {
+                    script {
+                        // 创建 terraform.tfvars
+                        sh """
+                        cat > terraform.tfvars << EOL
+                        app_version = "${params.VERSION}"
+                        previous_version = "${params.VERSION}"
+                        active_env = "${env.CURRENT_ENV}"
+                        EOL
+                        """
+                        
+                        // 运行 Terraform 计划
+                        sh "terraform plan -out=tfplan"
+                        
+                        // 应用 Terraform 配置
+                        sh "terraform apply -auto-approve tfplan"
+                    }
+                }
+                
+                echo "部署完成，${env.TARGET_ENV} 环境现在运行版本 ${params.VERSION}"
+            }
+        }
+        
+        // 测试阶段：测试新部署的环境
+        stage('Test') {
+            when {
+                expression { params.ACTION == 'deploy' }
+            }
+            steps {
+                echo "测试 ${env.TARGET_ENV} 环境..."
+                
+                // 使用测试脚本
+                sh """
+                    ${SCRIPTS_DIR}/test.sh \
+                    ${env.TARGET_ENV} \
+                    ${TERRAFORM_DIR}/config/${env.TARGET_ENV}.properties
+                """
+                
+                echo "${env.TARGET_ENV} 环境测试通过"
+            }
+        }
+        
+        // 确认阶段：手动确认是否切换流量
+        stage('Confirm Switch') {
+            when {
+                expression { params.ACTION == 'deploy' }
+            }
+            steps {
+                input message: "是否将流量切换到 ${env.TARGET_ENV} 环境？", ok: '确认切换'
+            }
+        }
+        
+        // 切换阶段：将流量切换到新环境
+        stage('Switch') {
+            when {
+                expression { params.ACTION == 'deploy' }
+            }
+            steps {
+                echo "切换流量到 ${env.TARGET_ENV} 环境..."
+                
+                dir(TERRAFORM_DIR) {
+                    script {
+                        // 更新 terraform.tfvars 以切换活动环境
+                        sh """
+                        cat > terraform.tfvars << EOL
+                        app_version = "${params.VERSION}"
+                        previous_version = "${params.VERSION}"
+                        active_env = "${env.TARGET_ENV}"
+                        EOL
+                        """
+                        
+                        // 运行 Terraform 计划
+                        sh "terraform plan -out=tfplan"
+                        
+                        // 应用 Terraform 配置
+                        sh "terraform apply -auto-approve tfplan"
+                        
+                        // 更新当前环境记录
+                        sh "echo ${env.TARGET_ENV} > ${TERRAFORM_DIR}/active_env.txt"
+                    }
+                }
+                
+                echo "流量已成功切换到 ${env.TARGET_ENV} 环境"
+            }
+        }
+        
+        // 回滚阶段
+        stage('Rollback') {
+            when {
+                expression { params.ACTION == 'rollback' }
+            }
+            steps {
+                echo "执行回滚操作..."
+                
+                dir(TERRAFORM_DIR) {
+                    script {
+                        // 读取当前活动环境
+                        env.CURRENT_ENV = sh(script: "cat ${TERRAFORM_DIR}/active_env.txt", returnStdout: true).trim()
+                        env.TARGET_ENV = env.CURRENT_ENV == 'blue' ? 'green' : 'blue'
+                        
+                        // 更新 terraform.tfvars 以切换回上一个环境
+                        sh """
+                        cat > terraform.tfvars << EOL
+                        app_version = "${params.VERSION}"
+                        previous_version = "${params.VERSION}"
+                        active_env = "${env.TARGET_ENV}"
+                        EOL
+                        """
+                        
+                        // 运行 Terraform 计划
+                        sh "terraform plan -out=tfplan"
+                        
+                        // 应用 Terraform 配置
+                        sh "terraform apply -auto-approve tfplan"
+                        
+                        // 更新当前环境记录
+                        sh "echo ${env.TARGET_ENV} > ${TERRAFORM_DIR}/active_env.txt"
+                    }
+                }
+                
+                echo "回滚完成，流量已切换到 ${env.TARGET_ENV} 环境"
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo "Terraform 蓝绿部署流程成功完成！"
+        }
+        failure {
+            echo "Terraform 蓝绿部署流程失败！"
+        }
+        always {
+            echo "清理临时文件..."
+            sh "rm -f tfplan"
+        }
+    }
+}
