@@ -73,6 +73,44 @@ resource "google_compute_instance" "proxy" {
         }
     }
     EOL
+    
+    # 创建 Nginx 配置模板文件，用于环境切换
+    cat > /etc/nginx/sites-available/default.template <<EOL
+    # Nginx 蓝绿部署配置模板
+    # 创建日期: 2025-07-08
+
+    upstream blue {
+        server ${var.blue_address}:${var.blue_port};
+    }
+
+    upstream green {
+        server ${var.green_address}:${var.green_port};
+    }
+
+    server {
+        listen 80;
+        server_name _;
+
+        access_log /var/log/nginx/app.access.log;
+        error_log /var/log/nginx/app.error.log;
+
+        # 根据当前活动环境转发请求
+        location / {
+            proxy_pass http://{{ACTIVE_ENV}};
+            proxy_set_header Host \$host;
+            proxy_set_header X-Real-IP \$remote_addr;
+            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto \$scheme;
+        }
+
+        # 健康检查端点
+        location /health {
+            proxy_pass http://{{ACTIVE_ENV}}/health;
+            proxy_set_header Host \$host;
+            proxy_set_header X-Real-IP \$remote_addr;
+        }
+    }
+    EOL
 
     # 创建环境状态文件
     echo "${var.active_env}" > /var/www/active_env.txt

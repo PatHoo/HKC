@@ -16,8 +16,8 @@ TARGET_ENV=$2
 echo "开始将流量从 $CURRENT_ENV 环境切换到 $TARGET_ENV 环境..."
 
 # 定义 Nginx 配置文件路径（根据实际情况修改）
-NGINX_CONFIG="/etc/nginx/conf.d/app.conf"
-NGINX_CONFIG_TEMPLATE="/etc/nginx/conf.d/app.conf.template"
+NGINX_CONFIG="/etc/nginx/sites-available/default"
+NGINX_CONFIG_TEMPLATE="/etc/nginx/sites-available/default.template"
 
 # 检查 Nginx 配置文件是否存在
 if [ ! -f "$NGINX_CONFIG_TEMPLATE" ]; then

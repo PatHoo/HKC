@@ -63,7 +63,7 @@ resource "google_compute_instance" "blue" {
     });
     
     server.listen(port, () => {
-      console.log(\`服务器运行在 http://localhost:\${port}/\`);
+      console.log('服务器运行在 http://localhost:' + port + '/');
     });
     EOL
 

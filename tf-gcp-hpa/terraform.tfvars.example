@@ -9,20 +9,16 @@ region     = "asia-east1"
 zone       = "asia-east1-a"
 
 # 网络配置
-network        = "gke-network"          # VPC 网络名称
-subnetwork     = "gke-subnet"           # 子网名称
-subnet_ip_cidr_range = "10.0.0.0/20"         # 子网 IP CIDR 范围
-ip_range_pods_cidr   = "10.16.0.0/16"        # Pod IP CIDR 范围
-ip_range_services_cidr = "10.20.0.0/16"      # 服务 IP CIDR 范围
-ip_range_pods     = "ip-range-pods"          # Pod IP 范围名称
-ip_range_services = "ip-range-services"      # 服务 IP 范围名称
+network_name         = "gke-network"          # VPC 网络名称
+subnet_name          = "gke-subnet"           # 子网名称
+subnet_ip_cidr_range = "10.0.0.0/20"          # 子网 IP CIDR 范围
+ip_range_pods_name   = "ip-range-pods"        # Pod IP 范围名称
+ip_range_pods_cidr   = "10.16.0.0/16"         # Pod IP CIDR 范围
+ip_range_services_name = "ip-range-services"  # 服务 IP 范围名称
+ip_range_services_cidr = "10.20.0.0/16"       # 服务 IP CIDR 范围
 
 # GKE 集群配置
 cluster_name = "gke-hpa-demo"
-
-# 兼容旧配置变量
-network_name  = "${network}"  # 与 network 保持一致
-subnetwork_name = "${subnetwork}"   # 与 subnetwork 保持一致
 
 # 应用配置
 app_name     = "demo-app"
