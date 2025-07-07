@@ -201,6 +201,16 @@ Deploys a sample application and configures HPA to demonstrate Kubernetes Horizo
 
 ## Notes
 
-- Ensure that necessary APIs (Compute Engine API, Kubernetes Engine API, etc.) are enabled in your GCP project
+- Ensure that the following necessary APIs are enabled in your GCP project:
+  - Compute Engine API (`compute.googleapis.com`)
+  - Kubernetes Engine API (`container.googleapis.com`)
+  - Container Registry API (`containerregistry.googleapis.com`)
+  - Cloud Resource Manager API (`cloudresourcemanager.googleapis.com`)
+  - Identity and Access Management (IAM) API (`iam.googleapis.com`)
+  - Cloud Monitoring API (`monitoring.googleapis.com`)
+  - Cloud Logging API (`logging.googleapis.com`)
+  - Service Networking API (`servicenetworking.googleapis.com`)
+  - Cloud DNS API (`dns.googleapis.com`)
+  - Artifact Registry API (`artifactregistry.googleapis.com`)
 - Adjust parameters in the variable files according to your actual requirements
 - Ensure thorough testing before deploying to production environments

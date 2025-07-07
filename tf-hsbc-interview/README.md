@@ -201,6 +201,16 @@ kubectl get hpa -n dev-hpa-demo -w
 
 ## 注意事项
 
-- 确保 GCP 项目已启用必要的 API（Compute Engine API, Kubernetes Engine API 等）
+- 确保 GCP 项目已启用以下必要的 API：
+  - Compute Engine API (`compute.googleapis.com`)
+  - Kubernetes Engine API (`container.googleapis.com`)
+  - Container Registry API (`containerregistry.googleapis.com`)
+  - Cloud Resource Manager API (`cloudresourcemanager.googleapis.com`)
+  - Identity and Access Management (IAM) API (`iam.googleapis.com`)
+  - Cloud Monitoring API (`monitoring.googleapis.com`)
+  - Cloud Logging API (`logging.googleapis.com`)
+  - Service Networking API (`servicenetworking.googleapis.com`)
+  - Cloud DNS API (`dns.googleapis.com`)
+  - Artifact Registry API (`artifactregistry.googleapis.com`)
 - 根据实际需求调整变量文件中的参数
 - 生产环境部署前，请确保已进行充分测试
