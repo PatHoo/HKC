@@ -32,11 +32,6 @@ resource "google_container_cluster" "primary" {
     enabled  = true
     provider = "CALICO"
   }
-
-  # 启用 Pod 安全策略
-  pod_security_policy_config {
-    enabled = false
-  }
 }
 
 resource "google_container_node_pool" "primary_nodes" {
