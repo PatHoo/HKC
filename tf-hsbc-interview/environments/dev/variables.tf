@@ -301,6 +301,18 @@ variable "hpa_max_replicas" {
   default     = 10
 }
 
+variable "hpa_demo_min_replicas" {
+  description = "HPA demo 应用的最小副本数"
+  type        = number
+  default     = 1
+}
+
+variable "hpa_demo_max_replicas" {
+  description = "HPA demo 应用的最大副本数"
+  type        = number
+  default     = 10
+}
+
 variable "hpa_target_cpu_utilization" {
   description = "HPA 目标 CPU 利用率百分比"
   type        = number

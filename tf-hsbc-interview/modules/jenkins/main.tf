@@ -120,7 +120,6 @@ resource "kubernetes_deployment" "jenkins" {
           
           security_context {
             run_as_user = 1000
-            fs_group    = 1000
           }
         }
         

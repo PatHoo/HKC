@@ -74,7 +74,7 @@ resource "kubernetes_deployment" "jenkins_blue" {
               path = "/login"
               port = "http"
             }
-            initial_delay_seconds = 180
+            initial_delay_seconds = 90
             timeout_seconds       = 5
             period_seconds        = 10
             failure_threshold     = 10
@@ -85,7 +85,7 @@ resource "kubernetes_deployment" "jenkins_blue" {
               path = "/login"
               port = "http"
             }
-            initial_delay_seconds = 180
+            initial_delay_seconds = 90
             timeout_seconds       = 5
             period_seconds        = 10
             failure_threshold     = 10
@@ -98,7 +98,7 @@ resource "kubernetes_deployment" "jenkins_blue" {
           
           security_context {
             run_as_user = 1000
-            fs_group    = 1000
+
           }
         }
         
@@ -185,7 +185,7 @@ resource "kubernetes_deployment" "jenkins_green" {
               path = "/login"
               port = "http"
             }
-            initial_delay_seconds = 180
+            initial_delay_seconds = 90
             timeout_seconds       = 5
             period_seconds        = 10
             failure_threshold     = 10
@@ -196,7 +196,7 @@ resource "kubernetes_deployment" "jenkins_green" {
               path = "/login"
               port = "http"
             }
-            initial_delay_seconds = 180
+            initial_delay_seconds = 90
             timeout_seconds       = 5
             period_seconds        = 10
             failure_threshold     = 10
@@ -209,7 +209,7 @@ resource "kubernetes_deployment" "jenkins_green" {
           
           security_context {
             run_as_user = 1000
-            fs_group    = 1000
+
           }
         }
         

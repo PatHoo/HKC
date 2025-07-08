@@ -11,7 +11,7 @@ variable "namespace" {
 variable "app_image" {
   description = "演示应用镜像"
   type        = string
-  default     = "k8s.gcr.io/hpa-example"
+  default     = "registry.k8s.io/hpa-example"
 }
 
 variable "initial_replicas" {
