@@ -11,7 +11,10 @@ variable "namespace" {
 variable "app_image" {
   description = "演示应用镜像"
   type        = string
-  default     = "registry.k8s.io/hpa-example"
+  default     = "gcr.io/google_containers/hpa-example"
+  # 注意: 如果上述镜像也无法访问，可以尝试以下镜像：
+  # default     = "nginx:latest"  # 使用普通的 nginx 镜像作为替代
+  # default     = "paulbouwer/hello-kubernetes:1.10"  # 使用可靠的测试镜像
 }
 
 variable "initial_replicas" {
