@@ -148,6 +148,18 @@ HSBC 面试演示项目
 - 多环境支持
 - [查看详情](./tf-hsbc-interview/README.md) | [English](./tf-hsbc-interview/README_EN.md)
 
+### 5. tf-advanced-hsbc
+
+增强版 HSBC 项目（基于 tf-hsbc-interview）
+
+- 完整的云原生 CI/CD 解决方案
+- 远程状态管理（GCS 后端）
+- 多环境脚本化部署（开发/预发/生产）
+- 高级安全与合规配置
+- 自动化测试与验证
+- 详细的监控与告警
+- [查看详情](./tf-advanced-hsbc/README.md) | [English](./tf-advanced-hsbc/README_EN.md)
+
 ## 部署指南
 
 ### 1. 环境准备

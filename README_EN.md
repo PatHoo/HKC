@@ -148,6 +148,18 @@ HSBC Interview Demo Project
 - Multi-environment support
 - [View Details](./tf-hsbc-interview/README_EN.md) | [中文](./tf-hsbc-interview/README.md)
 
+### 5. tf-advanced-hsbc
+
+Enhanced HSBC Project (based on tf-hsbc-interview)
+
+- Complete cloud-native CI/CD solution
+- Remote state management (GCS backend)
+- Scripted multi-environment deployment (dev/stage/prod)
+- Advanced security and compliance configurations
+- Automated testing and validation
+- Comprehensive monitoring and alerting
+- [View Details](./tf-advanced-hsbc/README_EN.md) | [中文](./tf-advanced-hsbc/README.md)
+
 ## Subprojects
 
 ### 1. tf-gcp-hpa
