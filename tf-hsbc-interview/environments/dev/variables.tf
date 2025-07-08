@@ -331,3 +331,10 @@ variable "enable_jenkins" {
   type        = bool
   default     = true
 }
+
+# 集群删除保护设置
+variable "deletion_protection" {
+  description = "是否启用集群删除保护"
+  type        = bool
+  default     = true
+}

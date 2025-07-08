@@ -53,6 +53,7 @@ module "gke" {
   disk_size_gb            = var.disk_size_gb
   disk_type               = var.disk_type
   preemptible             = var.preemptible
+  deletion_protection     = var.deletion_protection
 }
 
 # 部署 Jenkins

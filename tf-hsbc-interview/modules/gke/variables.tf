@@ -98,3 +98,9 @@ variable "preemptible" {
   type        = bool
   default     = false
 }
+
+variable "deletion_protection" {
+  description = "是否启用集群删除保护"
+  type        = bool
+  default     = true
+}

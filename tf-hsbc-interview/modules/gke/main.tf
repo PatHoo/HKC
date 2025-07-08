@@ -8,6 +8,9 @@ resource "google_container_cluster" "primary" {
   project  = var.project_id
   location = var.region
   
+  # 控制集群删除保护
+  deletion_protection = var.deletion_protection
+  
   # 我们使用单独的节点池
   remove_default_node_pool = true
   initial_node_count       = 1

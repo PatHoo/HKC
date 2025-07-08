@@ -162,6 +162,55 @@ terraform apply -var="project_id=YOUR_GCP_PROJECT_ID" -var="blue_deployment_acti
 terraform apply -var="project_id=YOUR_GCP_PROJECT_ID" -var="blue_deployment_active=true"
 ```
 
+### 测试蓝/绿部署
+
+部署完成后，可以通过以下步骤测试和验证蓝/绿部署功能：
+
+1. 查看当前运行的 Jenkins Pod
+```bash
+kubectl get pods -n dev-jenkins -l app=jenkins
+```
+
+2. 检查蓝/绿服务的当前路由目标
+```bash
+kubectl describe service jenkins-blue-green -n dev-jenkins
+```
+在输出中查找 `Selector` 字段，它会显示当前服务指向的是蓝色还是绿色部署（`version=blue` 或 `version=green`）。
+
+3. 切换部署版本
+```bash
+# 切换到绿色部署
+terraform apply -var="project_id=YOUR_GCP_PROJECT_ID" -var="blue_deployment_active=false"
+```
+
+4. 验证服务流量切换
+```bash
+# 等待几分钟让变更生效
+kubectl describe service jenkins-blue-green -n dev-jenkins
+```
+确认 `Selector` 已更新为 `version=green`。
+
+5. 验证 Pod 数量变化
+```bash
+# 查看蓝色部署的 Pod 数量（应为 0）
+kubectl get deployment jenkins-blue -n dev-jenkins
+
+# 查看绿色部署的 Pod 数量（应为 1）
+kubectl get deployment jenkins-green -n dev-jenkins
+```
+
+6. 访问 Jenkins 服务验证功能正常
+```bash
+# 获取 Jenkins 服务的外部 IP
+kubectl get service jenkins-blue-green -n dev-jenkins
+```
+使用浏览器访问 `http://<EXTERNAL-IP>` 确认 Jenkins 正常运行。
+
+7. 切换回蓝色部署并重复验证步骤
+```bash
+terraform apply -var="project_id=YOUR_GCP_PROJECT_ID" -var="blue_deployment_active=true"
+```
+
 ### 测试 HPA
 
 部署完成后，可以通过以下步骤测试 HPA 功能：
