@@ -74,6 +74,9 @@ module "jenkins" {
   jenkins_green_image    = var.jenkins_green_image
   blue_deployment_active = var.blue_deployment_active
   
+  # 控制是否启用 Jenkins 部署
+  enable_jenkins         = var.enable_jenkins
+  
   depends_on = [module.gke]
 }
 

@@ -324,3 +324,10 @@ variable "hpa_service_type" {
   type        = string
   default     = "LoadBalancer"
 }
+
+# Jenkins 部署控制
+variable "enable_jenkins" {
+  description = "是否启用 Jenkins 部署"
+  type        = bool
+  default     = true
+}
