@@ -34,6 +34,10 @@ resource "kubernetes_deployment" "jenkins_blue" {
       spec {
         service_account_name = kubernetes_service_account.jenkins.metadata[0].name
         
+        security_context {
+          fs_group = 1000
+        }
+        
         container {
           name  = "jenkins"
           image = var.jenkins_blue_image
@@ -61,7 +65,7 @@ resource "kubernetes_deployment" "jenkins_blue" {
           
           env {
             name  = "JAVA_OPTS"
-            value = "-Djenkins.install.runSetupWizard=false -Dhudson.model.DownloadService.noSignatureCheck=true"
+            value = "-Djenkins.install.runSetupWizard=false -Dhudson.model.DownloadService.noSignatureCheck=true -Dhudson.model.DownloadService.never=true -Djenkins.model.DownloadService.never=true"
           }
           
           env {
@@ -145,6 +149,10 @@ resource "kubernetes_deployment" "jenkins_green" {
       spec {
         service_account_name = kubernetes_service_account.jenkins.metadata[0].name
         
+        security_context {
+          fs_group = 1000
+        }
+        
         container {
           name  = "jenkins"
           image = var.jenkins_green_image
@@ -172,7 +180,7 @@ resource "kubernetes_deployment" "jenkins_green" {
           
           env {
             name  = "JAVA_OPTS"
-            value = "-Djenkins.install.runSetupWizard=false -Dhudson.model.DownloadService.noSignatureCheck=true"
+            value = "-Djenkins.install.runSetupWizard=false -Dhudson.model.DownloadService.noSignatureCheck=true -Dhudson.model.DownloadService.never=true -Djenkins.model.DownloadService.never=true"
           }
           
           env {
