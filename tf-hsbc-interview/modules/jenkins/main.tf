@@ -39,7 +39,7 @@ resource "kubernetes_deployment" "jenkins" {
   }
   
   spec {
-    replicas = 1
+    replicas = var.enable_jenkins ? 1 : 0
     
     selector {
       match_labels = {

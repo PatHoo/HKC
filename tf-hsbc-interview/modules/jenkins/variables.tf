@@ -74,3 +74,9 @@ variable "blue_deployment_active" {
   type        = bool
   default     = true
 }
+
+variable "enable_jenkins" {
+  description = "是否启用 Jenkins 部署"
+  type        = bool
+  default     = true
+}

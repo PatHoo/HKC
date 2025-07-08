@@ -14,7 +14,7 @@ resource "kubernetes_deployment" "jenkins_blue" {
   }
   
   spec {
-    replicas = var.blue_deployment_active ? 1 : 0
+    replicas = var.enable_jenkins ? (var.blue_deployment_active ? 1 : 0) : 0
     
     selector {
       match_labels = {
@@ -125,7 +125,7 @@ resource "kubernetes_deployment" "jenkins_green" {
   }
   
   spec {
-    replicas = var.blue_deployment_active ? 0 : 1
+    replicas = var.enable_jenkins ? (var.blue_deployment_active ? 0 : 1) : 0
     
     selector {
       match_labels = {
