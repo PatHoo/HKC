@@ -262,7 +262,7 @@ variable "hpa_demo_namespace" {
 variable "hpa_app_image" {
   description = "HPA 演示应用镜像"
   type        = string
-  default     = "k8s.gcr.io/hpa-example"
+  default     = "registry.k8s.io/hpa-example"
 }
 
 variable "hpa_initial_replicas" {
